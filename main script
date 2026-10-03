@@ -1,9 +1,206 @@
 --[[
-    PROJECT DELTA - CC CHEATS STYLE SCRIPT
+    PROJECT DELTA - CC CHEATS STYLE SCRIPT (LOADSTRING VERSION WITH KEY)
     Features: ESP (Box, Skeleton, Head Circle, Health, Distance, Name, Ammo), Aimbot (Silent & Sticky), Inventory Checker
-    Removed: CarFly, Speed Hack, Anti-Aim, B-Hop
     UI: Matcha-style with tabs and neon borders
+    Protection: Key system (simple)
 ]]
+
+-- =============================================
+-- KEY SYSTEM
+-- =============================================
+
+local KeyConfig = {
+    ValidKeys = {"CC-DELTA-2024", "CC-FREE-KEY", "CC-VIP-KEY"},
+    KeyFile = "CCKey.txt",
+    KeyURL = "https://pastebin.com/raw/YOUR_KEY_LIST", -- replace with your raw pastebin
+    Discord = "https://discord.gg/YOUR_DISCORD", -- replace with your discord
+}
+
+local function CheckKey()
+    -- Read saved key
+    local savedKey = nil
+    if readfile and isfile and isfile(KeyConfig.KeyFile) then
+        savedKey = readfile(KeyConfig.KeyFile)
+    end
+    
+    -- If no saved key, prompt user
+    if not savedKey then
+        -- Create key input UI
+        local screenGui = Instance.new("ScreenGui")
+        screenGui.Name = "CCKeyUI"
+        screenGui.Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+        screenGui.IgnoreGuiInset = true
+        screenGui.ResetOnSpawn = false
+        
+        local frame = Instance.new("Frame")
+        frame.Size = UDim2.new(0, 300, 0, 180)
+        frame.Position = UDim2.new(0.5, -150, 0.5, -90)
+        frame.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
+        frame.BorderSizePixel = 0
+        frame.Parent = screenGui
+        
+        local corner = Instance.new("UICorner")
+        corner.CornerRadius = UDim.new(0, 16)
+        corner.Parent = frame
+        
+        -- Neon border
+        local border = Instance.new("Frame")
+        border.Size = UDim2.new(1, 4, 1, 4)
+        border.Position = UDim2.new(0, -2, 0, -2)
+        border.BackgroundColor3 = Color3.fromRGB(160, 50, 255)
+        border.BackgroundTransparency = 0.3
+        border.BorderSizePixel = 0
+        border.ZIndex = 0
+        border.Parent = frame
+        
+        local borderCorner = Instance.new("UICorner")
+        borderCorner.CornerRadius = UDim.new(0, 18)
+        borderCorner.Parent = border
+        
+        local title = Instance.new("TextLabel")
+        title.Size = UDim2.new(1, 0, 0, 40)
+        title.Position = UDim2.new(0, 0, 0, 10)
+        title.Text = "✦ CC CHEATS - KEY SYSTEM"
+        title.TextColor3 = Color3.fromRGB(255, 100, 130)
+        title.BackgroundTransparency = 1
+        title.Font = Enum.Font.GothamBold
+        title.TextSize = 16
+        title.Parent = frame
+        
+        local subtitle = Instance.new("TextLabel")
+        subtitle.Size = UDim2.new(1, 0, 0, 20)
+        subtitle.Position = UDim2.new(0, 0, 0, 45)
+        subtitle.Text = "Enter your key below:"
+        subtitle.TextColor3 = Color3.fromRGB(200, 200, 200)
+        subtitle.BackgroundTransparency = 1
+        subtitle.Font = Enum.Font.Gotham
+        subtitle.TextSize = 12
+        subtitle.Parent = frame
+        
+        local input = Instance.new("TextBox")
+        input.Size = UDim2.new(0.8, 0, 0, 30)
+        input.Position = UDim2.new(0.1, 0, 0, 70)
+        input.BackgroundColor3 = Color3.fromRGB(30, 30, 38)
+        input.TextColor3 = Color3.fromRGB(255, 255, 255)
+        input.PlaceholderText = "CC-XXXX-XXXX"
+        input.PlaceholderColor3 = Color3.fromRGB(120, 120, 120)
+        input.Font = Enum.Font.Gotham
+        input.TextSize = 13
+        input.BorderSizePixel = 0
+        input.Parent = frame
+        
+        local inputCorner = Instance.new("UICorner")
+        inputCorner.CornerRadius = UDim.new(0, 8)
+        inputCorner.Parent = input
+        
+        local status = Instance.new("TextLabel")
+        status.Size = UDim2.new(1, 0, 0, 20)
+        status.Position = UDim2.new(0, 0, 0, 105)
+        status.Text = ""
+        status.TextColor3 = Color3.fromRGB(255, 100, 100)
+        status.BackgroundTransparency = 1
+        status.Font = Enum.Font.Gotham
+        status.TextSize = 11
+        status.Parent = frame
+        
+        local submit = Instance.new("TextButton")
+        submit.Size = UDim2.new(0, 100, 0, 30)
+        submit.Position = UDim2.new(0.5, -50, 0, 130)
+        submit.BackgroundColor3 = Color3.fromRGB(40, 40, 48)
+        submit.TextColor3 = Color3.fromRGB(220, 220, 220)
+        submit.Text = "Submit"
+        submit.Font = Enum.Font.GothamBold
+        submit.TextSize = 13
+        submit.BorderSizePixel = 0
+        submit.Parent = frame
+        
+        local submitCorner = Instance.new("UICorner")
+        submitCorner.CornerRadius = UDim.new(0, 10)
+        submitCorner.Parent = submit
+        
+        local discordBtn = Instance.new("TextButton")
+        discordBtn.Size = UDim2.new(0, 100, 0, 20)
+        discordBtn.Position = UDim2.new(0.5, -50, 0, 155)
+        discordBtn.BackgroundTransparency = 1
+        discordBtn.TextColor3 = Color3.fromRGB(100, 150, 255)
+        discordBtn.Text = "Get Key (Discord)"
+        discordBtn.Font = Enum.Font.Gotham
+        discordBtn.TextSize = 11
+        discordBtn.Parent = frame
+        
+        local validKey = false
+        
+        submit.MouseButton1Click:Connect(function()
+            local key = input.Text
+            if key == "" then
+                status.Text = "Please enter a key."
+                return
+            end
+            
+            -- Check against local list
+            for _, valid in ipairs(KeyConfig.ValidKeys) do
+                if key == valid then
+                    validKey = true
+                    break
+                end
+            end
+            
+            -- Also check online list if available
+            if not validKey and KeyConfig.KeyURL and KeyConfig.KeyURL ~= "" then
+                local success, response = pcall(function()
+                    return game:HttpGet(KeyConfig.KeyURL)
+                end)
+                if success and response then
+                    for line in response:gmatch("[^\r\n]+") do
+                        if line == key then
+                            validKey = true
+                            break
+                        end
+                    end
+                end
+            end
+            
+            if validKey then
+                -- Save key
+                if writefile then
+                    pcall(function()
+                        writefile(KeyConfig.KeyFile, key)
+                    end)
+                end
+                status.Text = "✅ Key accepted! Loading..."
+                status.TextColor3 = Color3.fromRGB(100, 255, 100)
+                task.wait(1)
+                screenGui:Destroy()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/CCCheats.lua"))()
+            else
+                status.Text = "❌ Invalid key. Join Discord for a key."
+                status.TextColor3 = Color3.fromRGB(255, 100, 100)
+            end
+        end)
+        
+        discordBtn.MouseButton1Click:Connect(function()
+            if setclipboard then
+                setclipboard(KeyConfig.Discord)
+                status.Text = "Discord link copied!"
+                status.TextColor3 = Color3.fromRGB(100, 200, 255)
+            end
+        end)
+        
+        -- Stop execution until key is entered
+        repeat task.wait() until validKey
+    end
+    
+    return true
+end
+
+-- Run key check
+if not CheckKey() then
+    return
+end
+
+-- =============================================
+-- MAIN SCRIPT
+-- =============================================
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -16,7 +213,6 @@ local LocalPlayer = Players.LocalPlayer
 -- =============================================
 
 local Config = {
-    -- ESP
     ESPEnabled = true,
     ESPBox = true,
     ESPName = true,
@@ -27,22 +223,18 @@ local Config = {
     ESPSkeleton = true,
     ESPHealthBar = true,
     ESPHealthText = true,
-    
-    -- AIMBOT
     AimbotEnabled = true,
     SilentAim = true,
     StickyAim = false,
     AimbotKey = "MouseButton2",
     AimbotFOV = 120,
     AimbotSmoothness = 0.5,
-    
-    -- INVENTORY
     InventoryCheck = true,
     InventoryKey = "I",
 }
 
 -- =============================================
--- COLORS (Matcha style with neon)
+-- COLORS
 -- =============================================
 
 local COLORS = {
@@ -74,7 +266,7 @@ local AMMO_TYPES = {
 }
 
 -- =============================================
--- UI - TABS SYSTEM WITH NEON BORDERS
+-- UI
 -- =============================================
 
 local function CreateUI()
@@ -97,7 +289,6 @@ local function CreateUI()
     corner.CornerRadius = UDim.new(0, 16)
     corner.Parent = mainFrame
 
-    -- Outer Neon Border
     local outerBorder = Instance.new("Frame")
     outerBorder.Size = UDim2.new(1, 6, 1, 6)
     outerBorder.Position = UDim2.new(0, -3, 0, -3)
@@ -117,7 +308,6 @@ local function CreateUI()
     outerGlowCorner.CornerRadius = UDim.new(0, 18)
     outerGlowCorner.Parent = outerGlow
 
-    -- TITLE
     local title = Instance.new("TextLabel")
     title.Size = UDim2.new(1, 0, 0, 45)
     title.Position = UDim2.new(0, 0, 0, 0)
@@ -382,7 +572,6 @@ local function CreateUI()
         return btn
     end
 
-    -- ESP TAB
     AddToggle(tabContents[1], "Enable ESP", "ESPEnabled", true)
     AddToggle(tabContents[1], "Box", "ESPBox", true)
     AddToggle(tabContents[1], "Name", "ESPName", true)
@@ -394,7 +583,6 @@ local function CreateUI()
     AddToggle(tabContents[1], "Health Bar", "ESPHealthBar", true)
     AddToggle(tabContents[1], "Health Text", "ESPHealthText", true)
 
-    -- AIMBOT TAB
     AddToggle(tabContents[2], "Enable Aimbot", "AimbotEnabled", true)
     AddToggle(tabContents[2], "Silent Aim", "SilentAim", true)
     AddToggle(tabContents[2], "Sticky Aim", "StickyAim", false)
@@ -402,7 +590,6 @@ local function CreateUI()
     AddValueButton(tabContents[2], "Smoothness", "AimbotSmoothness", {0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1}, function(v) return tostring(v * 100) .. "%" end)
     AddKeybind(tabContents[2], "Aim Key", "AimbotKey", "MouseButton2")
 
-    -- MISC TAB (Only inventory checker)
     AddToggle(tabContents[3], "Inventory Check", "InventoryCheck", true)
     AddKeybind(tabContents[3], "Inv Key", "InventoryKey", "I")
 
