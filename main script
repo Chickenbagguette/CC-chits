@@ -12,7 +12,7 @@
 local KeyConfig = {
     ValidKeys = {"CC-a7k9m2p4x6z1b3n5v8c0q"},
     KeyFile = "CCKey.txt",
-    KeyURL = "https://raw.githubusercontent.com/Chickenbagguette/CC-chits/refs/heads/main/keys.txt",
+    KeyURL = "https://raw.githubusercontent.com/YOUR_USERNAME/CCCheats/main/keys.txt",
 }
 
 local function CheckKey()
@@ -795,4 +795,289 @@ local function UpdatePlayerESP()
                 data.ammoTag.Visible = false
             end
 
-            if Config.ESPD
+            if Config.ESPDistance then
+                data.distanceTag.Position = Vector2.new(rp.X, top + height + 20)
+                data.distanceTag.Text = math.floor(distance) .. " studs"
+                data.distanceTag.Color = COLORS.Distance
+                data.distanceTag.Visible = true
+            else
+                data.distanceTag.Visible = false
+            end
+
+            if Config.ESPHealthText then
+                data.healthText.Position = Vector2.new(rp.X, top + height + 35)
+                data.healthText.Text = math.floor(hum.Health) .. " / " .. math.floor(hum.MaxHealth) .. " HP"
+                data.healthText.Color = COLORS.HealthText
+                data.healthText.Visible = true
+            else
+                data.healthText.Visible = false
+            end
+
+            if Config.ESPHeadDot then
+                data.headDot.Position = Vector2.new(hp.X, hp.Y)
+                data.headDot.Color = COLORS.Head
+                data.headDot.Visible = true
+            else
+                data.headDot.Visible = false
+            end
+
+            if Config.ESPHeadCircle then
+                data.headCircle.Position = Vector2.new(hp.X, hp.Y)
+                data.headCircle.Color = COLORS.HeadCircle
+                data.headCircle.Visible = true
+            else
+                data.headCircle.Visible = false
+            end
+
+            if Config.ESPHealthBar then
+                local pct = hum.Health / hum.MaxHealth
+                local bx = left + width + 5
+                local by = top
+                local bh = height * pct
+                data.healthBar.From = Vector2.new(bx, by + height - bh)
+                data.healthBar.To = Vector2.new(bx, by + height)
+                data.healthBar.Color = Color3.fromRGB(255 * (1 - pct), 255 * pct, 0)
+                data.healthBar.Visible = true
+            else
+                data.healthBar.Visible = false
+            end
+
+            if Config.ESPSkeleton then
+                local bones = GetBones(player.Character)
+                local bonePositions = {}
+                for _, bone in ipairs(bones) do
+                    local pos, onScreen = Camera:WorldToViewportPoint(bone.Position)
+                    if onScreen then table.insert(bonePositions, pos) end
+                end
+                local lineIndex = 1
+                for i = 1, #bonePositions - 1 do
+                    for j = i + 1, #bonePositions do
+                        if lineIndex <= #data.skeletonLines then
+                            local d = (Vector2.new(bonePositions[i].X, bonePositions[i].Y) - Vector2.new(bonePositions[j].X, bonePositions[j].Y)).Magnitude
+                            if d < 250 then
+                                data.skeletonLines[lineIndex].From = Vector2.new(bonePositions[i].X, bonePositions[i].Y)
+                                data.skeletonLines[lineIndex].To = Vector2.new(bonePositions[j].X, bonePositions[j].Y)
+                                data.skeletonLines[lineIndex].Color = COLORS.Skeleton
+                                data.skeletonLines[lineIndex].Visible = true
+                                lineIndex = lineIndex + 1
+                            end
+                        end
+                    end
+                end
+                for i = lineIndex, #data.skeletonLines do
+                    data.skeletonLines[i].Visible = false
+                end
+            else
+                for _, line in ipairs(data.skeletonLines) do line.Visible = false end
+            end
+        else
+            data.box.Visible = false
+            data.nameTag.Visible = false
+            data.ammoTag.Visible = false
+            data.distanceTag.Visible = false
+            data.healthText.Visible = false
+            data.headDot.Visible = false
+            data.headCircle.Visible = false
+            data.healthBar.Visible = false
+            for _, line in ipairs(data.skeletonLines) do line.Visible = false end
+        end
+    end
+end
+
+-- =============================================
+-- AIMBOT (Silent & Sticky)
+-- =============================================
+
+local targetPlayer = nil
+local stickyTarget = nil
+
+local function GetClosestPlayer()
+    local maxDist = Config.AimbotFOV or 120
+    local target = nil
+    local center = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("Humanoid") and plr.Character.Humanoid.Health > 0 then
+            local head = plr.Character:FindFirstChild("Head")
+            if head then
+                local pos, on = Camera:WorldToViewportPoint(head.Position)
+                if on then
+                    local dist = (Vector2.new(pos.X, pos.Y) - center).Magnitude
+                    if dist < maxDist then
+                        maxDist = dist
+                        target = plr
+                    end
+                end
+            end
+        end
+    end
+    return target
+end
+
+local function IsKeyPressed(keyName)
+    if keyName:find("MouseButton") then
+        local btnNum = tonumber(keyName:match("(%d+)"))
+        if btnNum == 1 then return UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) end
+        if btnNum == 2 then return UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) end
+        if btnNum == 3 then return UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton3) end
+    else
+        local key = Enum.KeyCode[keyName]
+        if key then return UserInputService:IsKeyDown(key) end
+    end
+    return false
+end
+
+local mouse = LocalPlayer:GetMouse()
+if mouse then
+    local mt = getrawmetatable and getrawmetatable(mouse) or nil
+    if mt then
+        local oldIdx = mt.__index
+        mt.__index = function(self, key)
+            if key == "Hit" and Config.AimbotEnabled then
+                if IsKeyPressed(Config.AimbotKey) then
+                    local target = nil
+                    if Config.StickyAim and stickyTarget and stickyTarget.Character and stickyTarget.Character:FindFirstChild("Humanoid") and stickyTarget.Character.Humanoid.Health > 0 then
+                        target = stickyTarget
+                    else
+                        target = GetClosestPlayer()
+                        if target then
+                            stickyTarget = target
+                        end
+                    end
+                    if target and target.Character then
+                        local head = target.Character:FindFirstChild("Head")
+                        if head then
+                            targetPlayer = target
+                            local origin = Camera.CFrame.Position
+                            local dir = (head.Position - origin).Unit
+                            if Config.SilentAim then
+                                return CFrame.lookAt(origin, origin + dir * 1000)
+                            else
+                                local newCFrame = CFrame.lookAt(origin, head.Position)
+                                local smooth = Config.AimbotSmoothness or 0.3
+                                Camera.CFrame = Camera.CFrame:Lerp(newCFrame, 1 - smooth)
+                            end
+                        end
+                    end
+                else
+                    targetPlayer = nil
+                    if not Config.StickyAim then
+                        stickyTarget = nil
+                    end
+                end
+            end
+            return oldIdx and oldIdx(self, key) or rawget(self, key)
+        end
+    end
+end
+
+-- =============================================
+-- TARGET LINE AND LABEL
+-- =============================================
+
+local function UpdateTargetDisplay()
+    if targetPlayer and targetPlayer.Character then
+        local head = targetPlayer.Character:FindFirstChild("Head")
+        if head then
+            local pos, on = Camera:WorldToViewportPoint(head.Position)
+            if on then
+                targetLine.From = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y)
+                targetLine.To = Vector2.new(pos.X, pos.Y)
+                targetLine.Visible = true
+                targetLabel.Position = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y - 30)
+                targetLabel.Text = "🎯 " .. targetPlayer.Name
+                targetLabel.Color = COLORS.TargetLine
+                targetLabel.Visible = true
+                return
+            end
+        end
+    end
+    targetLine.Visible = false
+    targetLabel.Visible = false
+end
+
+-- =============================================
+-- INVENTORY CHECKER
+-- =============================================
+
+local function ShowInventory(targetPlayer)
+    if not targetPlayer or not targetPlayer.Character then return end
+    
+    local backpack = targetPlayer:FindFirstChildOfClass("Backpack")
+    if not backpack then
+        print("No backpack found for " .. targetPlayer.Name)
+        return
+    end
+    
+    print("--- Inventory of " .. targetPlayer.Name .. " ---")
+    for _, item in ipairs(backpack:GetChildren()) do
+        if item:IsA("Tool") then
+            print("  > " .. item.Name)
+            local imageId = item.TextureId or item.Icon
+            if imageId then
+                print("    Image: " .. imageId)
+            end
+        end
+    end
+    print("---------------------------------")
+end
+
+UserInputService.InputBegan:Connect(function(input, processed)
+    if processed then return end
+    if Config.InventoryCheck and input.KeyCode == Enum.KeyCode[Config.InventoryKey] then
+        local target = GetClosestPlayer()
+        if target then
+            ShowInventory(target)
+        else
+            print("No player found within FOV to check inventory.")
+        end
+    end
+end)
+
+-- =============================================
+-- MAIN RENDER LOOP
+-- =============================================
+
+RunService.RenderStepped:Connect(function()
+    UpdatePlayerESP()
+    UpdateTargetDisplay()
+end)
+
+-- =============================================
+-- PLAYER HANDLERS
+-- =============================================
+
+for _, plr in pairs(Players:GetPlayers()) do
+    if plr ~= LocalPlayer then
+        plr.CharacterAdded:Connect(function() task.wait(0.5) CreateESP(plr) end)
+        if plr.Character then CreateESP(plr) end
+    end
+end
+
+Players.PlayerAdded:Connect(function(plr)
+    if plr == LocalPlayer then return end
+    plr.CharacterAdded:Connect(function() task.wait(0.5) CreateESP(plr) end)
+end)
+
+Players.PlayerRemoved:Connect(function(plr)
+    if espObjects[plr] then
+        espObjects[plr].box:Remove()
+        espObjects[plr].nameTag:Remove()
+        espObjects[plr].ammoTag:Remove()
+        espObjects[plr].distanceTag:Remove()
+        espObjects[plr].healthText:Remove()
+        espObjects[plr].headDot:Remove()
+        espObjects[plr].headCircle:Remove()
+        espObjects[plr].healthBar:Remove()
+        for _, line in ipairs(espObjects[plr].skeletonLines) do line:Remove() end
+        espObjects[plr] = nil
+    end
+    if targetPlayer == plr then targetPlayer = nil end
+    if stickyTarget == plr then stickyTarget = nil end
+end)
+
+print("CC Cheats - Project Delta loaded successfully!")
+print("Press Insert to toggle UI")
+print("ESP: Box, Name, Distance, Head Dot, Head Circle, Ammo, Skeleton, Health Bar, Health Text")
+print("Aimbot: Silent Aim | Sticky Aim | FOV: " .. Config.AimbotFOV .. " | Smoothness: " .. (Config.AimbotSmoothness * 100) .. "%")
+print("Inventory Check: ON (Press " .. Config.InventoryKey .. " to check nearest player's inventory)")
+print("Aimbot Key: " .. Config.AimbotKey)
