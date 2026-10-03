@@ -2,7 +2,7 @@
     PROJECT DELTA - CC CHEATS STYLE SCRIPT (LOADSTRING VERSION WITH KEY)
     Features: ESP (Box, Skeleton, Head Circle, Health, Distance, Name, Ammo), Aimbot (Silent & Sticky), Inventory Checker
     UI: Matcha-style with tabs and neon borders
-    Protection: Key system (simple)
+    Protection: Single key system (no Discord)
 ]]
 
 -- =============================================
@@ -10,40 +10,35 @@
 -- =============================================
 
 local KeyConfig = {
-    ValidKeys = {"CC-DELTA-2024", "CC-FREE-KEY", "CC-VIP-KEY"},
+    ValidKeys = {"CC-a7k9m2p4x6z1b3n5v8c0q"},
     KeyFile = "CCKey.txt",
-    KeyURL = "https://pastebin.com/raw/YOUR_KEY_LIST", -- replace with your raw pastebin
-    Discord = "https://discord.gg/YOUR_DISCORD", -- replace with your discord
+    KeyURL = "https://raw.githubusercontent.com/Chickenbagguette/CC-chits/refs/heads/main/keys.txt",
 }
 
 local function CheckKey()
-    -- Read saved key
     local savedKey = nil
     if readfile and isfile and isfile(KeyConfig.KeyFile) then
         savedKey = readfile(KeyConfig.KeyFile)
     end
-    
-    -- If no saved key, prompt user
+
     if not savedKey then
-        -- Create key input UI
         local screenGui = Instance.new("ScreenGui")
         screenGui.Name = "CCKeyUI"
         screenGui.Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
         screenGui.IgnoreGuiInset = true
         screenGui.ResetOnSpawn = false
-        
+
         local frame = Instance.new("Frame")
-        frame.Size = UDim2.new(0, 300, 0, 180)
-        frame.Position = UDim2.new(0.5, -150, 0.5, -90)
+        frame.Size = UDim2.new(0, 300, 0, 160)
+        frame.Position = UDim2.new(0.5, -150, 0.5, -80)
         frame.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
         frame.BorderSizePixel = 0
         frame.Parent = screenGui
-        
+
         local corner = Instance.new("UICorner")
         corner.CornerRadius = UDim.new(0, 16)
         corner.Parent = frame
-        
-        -- Neon border
+
         local border = Instance.new("Frame")
         border.Size = UDim2.new(1, 4, 1, 4)
         border.Position = UDim2.new(0, -2, 0, -2)
@@ -52,11 +47,11 @@ local function CheckKey()
         border.BorderSizePixel = 0
         border.ZIndex = 0
         border.Parent = frame
-        
+
         local borderCorner = Instance.new("UICorner")
         borderCorner.CornerRadius = UDim.new(0, 18)
         borderCorner.Parent = border
-        
+
         local title = Instance.new("TextLabel")
         title.Size = UDim2.new(1, 0, 0, 40)
         title.Position = UDim2.new(0, 0, 0, 10)
@@ -66,7 +61,7 @@ local function CheckKey()
         title.Font = Enum.Font.GothamBold
         title.TextSize = 16
         title.Parent = frame
-        
+
         local subtitle = Instance.new("TextLabel")
         subtitle.Size = UDim2.new(1, 0, 0, 20)
         subtitle.Position = UDim2.new(0, 0, 0, 45)
@@ -76,7 +71,7 @@ local function CheckKey()
         subtitle.Font = Enum.Font.Gotham
         subtitle.TextSize = 12
         subtitle.Parent = frame
-        
+
         local input = Instance.new("TextBox")
         input.Size = UDim2.new(0.8, 0, 0, 30)
         input.Position = UDim2.new(0.1, 0, 0, 70)
@@ -88,11 +83,11 @@ local function CheckKey()
         input.TextSize = 13
         input.BorderSizePixel = 0
         input.Parent = frame
-        
+
         local inputCorner = Instance.new("UICorner")
         inputCorner.CornerRadius = UDim.new(0, 8)
         inputCorner.Parent = input
-        
+
         local status = Instance.new("TextLabel")
         status.Size = UDim2.new(1, 0, 0, 20)
         status.Position = UDim2.new(0, 0, 0, 105)
@@ -102,10 +97,10 @@ local function CheckKey()
         status.Font = Enum.Font.Gotham
         status.TextSize = 11
         status.Parent = frame
-        
+
         local submit = Instance.new("TextButton")
         submit.Size = UDim2.new(0, 100, 0, 30)
-        submit.Position = UDim2.new(0.5, -50, 0, 130)
+        submit.Position = UDim2.new(0.5, -50, 0, 125)
         submit.BackgroundColor3 = Color3.fromRGB(40, 40, 48)
         submit.TextColor3 = Color3.fromRGB(220, 220, 220)
         submit.Text = "Submit"
@@ -113,39 +108,27 @@ local function CheckKey()
         submit.TextSize = 13
         submit.BorderSizePixel = 0
         submit.Parent = frame
-        
+
         local submitCorner = Instance.new("UICorner")
         submitCorner.CornerRadius = UDim.new(0, 10)
         submitCorner.Parent = submit
-        
-        local discordBtn = Instance.new("TextButton")
-        discordBtn.Size = UDim2.new(0, 100, 0, 20)
-        discordBtn.Position = UDim2.new(0.5, -50, 0, 155)
-        discordBtn.BackgroundTransparency = 1
-        discordBtn.TextColor3 = Color3.fromRGB(100, 150, 255)
-        discordBtn.Text = "Get Key (Discord)"
-        discordBtn.Font = Enum.Font.Gotham
-        discordBtn.TextSize = 11
-        discordBtn.Parent = frame
-        
+
         local validKey = false
-        
+
         submit.MouseButton1Click:Connect(function()
             local key = input.Text
             if key == "" then
                 status.Text = "Please enter a key."
                 return
             end
-            
-            -- Check against local list
+
             for _, valid in ipairs(KeyConfig.ValidKeys) do
                 if key == valid then
                     validKey = true
                     break
                 end
             end
-            
-            -- Also check online list if available
+
             if not validKey and KeyConfig.KeyURL and KeyConfig.KeyURL ~= "" then
                 local success, response = pcall(function()
                     return game:HttpGet(KeyConfig.KeyURL)
@@ -159,9 +142,8 @@ local function CheckKey()
                     end
                 end
             end
-            
+
             if validKey then
-                -- Save key
                 if writefile then
                     pcall(function()
                         writefile(KeyConfig.KeyFile, key)
@@ -171,29 +153,18 @@ local function CheckKey()
                 status.TextColor3 = Color3.fromRGB(100, 255, 100)
                 task.wait(1)
                 screenGui:Destroy()
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/CCCheats.lua"))()
             else
-                status.Text = "❌ Invalid key. Join Discord for a key."
+                status.Text = "❌ Invalid key. Ask the owner for a valid key."
                 status.TextColor3 = Color3.fromRGB(255, 100, 100)
             end
         end)
-        
-        discordBtn.MouseButton1Click:Connect(function()
-            if setclipboard then
-                setclipboard(KeyConfig.Discord)
-                status.Text = "Discord link copied!"
-                status.TextColor3 = Color3.fromRGB(100, 200, 255)
-            end
-        end)
-        
-        -- Stop execution until key is entered
+
         repeat task.wait() until validKey
     end
-    
+
     return true
 end
 
--- Run key check
 if not CheckKey() then
     return
 end
@@ -824,289 +795,4 @@ local function UpdatePlayerESP()
                 data.ammoTag.Visible = false
             end
 
-            if Config.ESPDistance then
-                data.distanceTag.Position = Vector2.new(rp.X, top + height + 20)
-                data.distanceTag.Text = math.floor(distance) .. " studs"
-                data.distanceTag.Color = COLORS.Distance
-                data.distanceTag.Visible = true
-            else
-                data.distanceTag.Visible = false
-            end
-
-            if Config.ESPHealthText then
-                data.healthText.Position = Vector2.new(rp.X, top + height + 35)
-                data.healthText.Text = math.floor(hum.Health) .. " / " .. math.floor(hum.MaxHealth) .. " HP"
-                data.healthText.Color = COLORS.HealthText
-                data.healthText.Visible = true
-            else
-                data.healthText.Visible = false
-            end
-
-            if Config.ESPHeadDot then
-                data.headDot.Position = Vector2.new(hp.X, hp.Y)
-                data.headDot.Color = COLORS.Head
-                data.headDot.Visible = true
-            else
-                data.headDot.Visible = false
-            end
-
-            if Config.ESPHeadCircle then
-                data.headCircle.Position = Vector2.new(hp.X, hp.Y)
-                data.headCircle.Color = COLORS.HeadCircle
-                data.headCircle.Visible = true
-            else
-                data.headCircle.Visible = false
-            end
-
-            if Config.ESPHealthBar then
-                local pct = hum.Health / hum.MaxHealth
-                local bx = left + width + 5
-                local by = top
-                local bh = height * pct
-                data.healthBar.From = Vector2.new(bx, by + height - bh)
-                data.healthBar.To = Vector2.new(bx, by + height)
-                data.healthBar.Color = Color3.fromRGB(255 * (1 - pct), 255 * pct, 0)
-                data.healthBar.Visible = true
-            else
-                data.healthBar.Visible = false
-            end
-
-            if Config.ESPSkeleton then
-                local bones = GetBones(player.Character)
-                local bonePositions = {}
-                for _, bone in ipairs(bones) do
-                    local pos, onScreen = Camera:WorldToViewportPoint(bone.Position)
-                    if onScreen then table.insert(bonePositions, pos) end
-                end
-                local lineIndex = 1
-                for i = 1, #bonePositions - 1 do
-                    for j = i + 1, #bonePositions do
-                        if lineIndex <= #data.skeletonLines then
-                            local d = (Vector2.new(bonePositions[i].X, bonePositions[i].Y) - Vector2.new(bonePositions[j].X, bonePositions[j].Y)).Magnitude
-                            if d < 250 then
-                                data.skeletonLines[lineIndex].From = Vector2.new(bonePositions[i].X, bonePositions[i].Y)
-                                data.skeletonLines[lineIndex].To = Vector2.new(bonePositions[j].X, bonePositions[j].Y)
-                                data.skeletonLines[lineIndex].Color = COLORS.Skeleton
-                                data.skeletonLines[lineIndex].Visible = true
-                                lineIndex = lineIndex + 1
-                            end
-                        end
-                    end
-                end
-                for i = lineIndex, #data.skeletonLines do
-                    data.skeletonLines[i].Visible = false
-                end
-            else
-                for _, line in ipairs(data.skeletonLines) do line.Visible = false end
-            end
-        else
-            data.box.Visible = false
-            data.nameTag.Visible = false
-            data.ammoTag.Visible = false
-            data.distanceTag.Visible = false
-            data.healthText.Visible = false
-            data.headDot.Visible = false
-            data.headCircle.Visible = false
-            data.healthBar.Visible = false
-            for _, line in ipairs(data.skeletonLines) do line.Visible = false end
-        end
-    end
-end
-
--- =============================================
--- AIMBOT (Silent & Sticky)
--- =============================================
-
-local targetPlayer = nil
-local stickyTarget = nil
-
-local function GetClosestPlayer()
-    local maxDist = Config.AimbotFOV or 120
-    local target = nil
-    local center = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
-    for _, plr in pairs(Players:GetPlayers()) do
-        if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("Humanoid") and plr.Character.Humanoid.Health > 0 then
-            local head = plr.Character:FindFirstChild("Head")
-            if head then
-                local pos, on = Camera:WorldToViewportPoint(head.Position)
-                if on then
-                    local dist = (Vector2.new(pos.X, pos.Y) - center).Magnitude
-                    if dist < maxDist then
-                        maxDist = dist
-                        target = plr
-                    end
-                end
-            end
-        end
-    end
-    return target
-end
-
-local function IsKeyPressed(keyName)
-    if keyName:find("MouseButton") then
-        local btnNum = tonumber(keyName:match("(%d+)"))
-        if btnNum == 1 then return UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) end
-        if btnNum == 2 then return UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) end
-        if btnNum == 3 then return UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton3) end
-    else
-        local key = Enum.KeyCode[keyName]
-        if key then return UserInputService:IsKeyDown(key) end
-    end
-    return false
-end
-
-local mouse = LocalPlayer:GetMouse()
-if mouse then
-    local mt = getrawmetatable and getrawmetatable(mouse) or nil
-    if mt then
-        local oldIdx = mt.__index
-        mt.__index = function(self, key)
-            if key == "Hit" and Config.AimbotEnabled then
-                if IsKeyPressed(Config.AimbotKey) then
-                    local target = nil
-                    if Config.StickyAim and stickyTarget and stickyTarget.Character and stickyTarget.Character:FindFirstChild("Humanoid") and stickyTarget.Character.Humanoid.Health > 0 then
-                        target = stickyTarget
-                    else
-                        target = GetClosestPlayer()
-                        if target then
-                            stickyTarget = target
-                        end
-                    end
-                    if target and target.Character then
-                        local head = target.Character:FindFirstChild("Head")
-                        if head then
-                            targetPlayer = target
-                            local origin = Camera.CFrame.Position
-                            local dir = (head.Position - origin).Unit
-                            if Config.SilentAim then
-                                return CFrame.lookAt(origin, origin + dir * 1000)
-                            else
-                                local newCFrame = CFrame.lookAt(origin, head.Position)
-                                local smooth = Config.AimbotSmoothness or 0.3
-                                Camera.CFrame = Camera.CFrame:Lerp(newCFrame, 1 - smooth)
-                            end
-                        end
-                    end
-                else
-                    targetPlayer = nil
-                    if not Config.StickyAim then
-                        stickyTarget = nil
-                    end
-                end
-            end
-            return oldIdx and oldIdx(self, key) or rawget(self, key)
-        end
-    end
-end
-
--- =============================================
--- TARGET LINE AND LABEL
--- =============================================
-
-local function UpdateTargetDisplay()
-    if targetPlayer and targetPlayer.Character then
-        local head = targetPlayer.Character:FindFirstChild("Head")
-        if head then
-            local pos, on = Camera:WorldToViewportPoint(head.Position)
-            if on then
-                targetLine.From = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y)
-                targetLine.To = Vector2.new(pos.X, pos.Y)
-                targetLine.Visible = true
-                targetLabel.Position = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y - 30)
-                targetLabel.Text = "🎯 " .. targetPlayer.Name
-                targetLabel.Color = COLORS.TargetLine
-                targetLabel.Visible = true
-                return
-            end
-        end
-    end
-    targetLine.Visible = false
-    targetLabel.Visible = false
-end
-
--- =============================================
--- INVENTORY CHECKER
--- =============================================
-
-local function ShowInventory(targetPlayer)
-    if not targetPlayer or not targetPlayer.Character then return end
-    
-    local backpack = targetPlayer:FindFirstChildOfClass("Backpack")
-    if not backpack then
-        print("No backpack found for " .. targetPlayer.Name)
-        return
-    end
-    
-    print("--- Inventory of " .. targetPlayer.Name .. " ---")
-    for _, item in ipairs(backpack:GetChildren()) do
-        if item:IsA("Tool") then
-            print("  > " .. item.Name)
-            local imageId = item.TextureId or item.Icon
-            if imageId then
-                print("    Image: " .. imageId)
-            end
-        end
-    end
-    print("---------------------------------")
-end
-
-UserInputService.InputBegan:Connect(function(input, processed)
-    if processed then return end
-    if Config.InventoryCheck and input.KeyCode == Enum.KeyCode[Config.InventoryKey] then
-        local target = GetClosestPlayer()
-        if target then
-            ShowInventory(target)
-        else
-            print("No player found within FOV to check inventory.")
-        end
-    end
-end)
-
--- =============================================
--- MAIN RENDER LOOP
--- =============================================
-
-RunService.RenderStepped:Connect(function()
-    UpdatePlayerESP()
-    UpdateTargetDisplay()
-end)
-
--- =============================================
--- PLAYER HANDLERS
--- =============================================
-
-for _, plr in pairs(Players:GetPlayers()) do
-    if plr ~= LocalPlayer then
-        plr.CharacterAdded:Connect(function() task.wait(0.5) CreateESP(plr) end)
-        if plr.Character then CreateESP(plr) end
-    end
-end
-
-Players.PlayerAdded:Connect(function(plr)
-    if plr == LocalPlayer then return end
-    plr.CharacterAdded:Connect(function() task.wait(0.5) CreateESP(plr) end)
-end)
-
-Players.PlayerRemoved:Connect(function(plr)
-    if espObjects[plr] then
-        espObjects[plr].box:Remove()
-        espObjects[plr].nameTag:Remove()
-        espObjects[plr].ammoTag:Remove()
-        espObjects[plr].distanceTag:Remove()
-        espObjects[plr].healthText:Remove()
-        espObjects[plr].headDot:Remove()
-        espObjects[plr].headCircle:Remove()
-        espObjects[plr].healthBar:Remove()
-        for _, line in ipairs(espObjects[plr].skeletonLines) do line:Remove() end
-        espObjects[plr] = nil
-    end
-    if targetPlayer == plr then targetPlayer = nil end
-    if stickyTarget == plr then stickyTarget = nil end
-end)
-
-print("CC Cheats - Project Delta loaded successfully!")
-print("Press Insert to toggle UI")
-print("ESP: Box, Name, Distance, Head Dot, Head Circle, Ammo, Skeleton, Health Bar, Health Text")
-print("Aimbot: Silent Aim | Sticky Aim | FOV: " .. Config.AimbotFOV .. " | Smoothness: " .. (Config.AimbotSmoothness * 100) .. "%")
-print("Inventory Check: ON (Press " .. Config.InventoryKey .. " to check nearest player's inventory)")
-print("Aimbot Key: " .. Config.AimbotKey)
+            if Config.ESPD
