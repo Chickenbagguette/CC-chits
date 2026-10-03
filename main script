@@ -3,6 +3,7 @@
     Features: ESP (Box, Skeleton, Head Circle, Health, Distance, Name, Ammo), Aimbot (Silent & Sticky), Inventory Checker
     UI: Matcha-style with tabs and neon borders
     Protection: Single key system (no Discord)
+    Repository: CC-chits
 ]]
 
 -- =============================================
@@ -12,7 +13,7 @@
 local KeyConfig = {
     ValidKeys = {"CC-a7k9m2p4x6z1b3n5v8c0q"},
     KeyFile = "CCKey.txt",
-    KeyURL = "https://raw.githubusercontent.com/YOUR_USERNAME/CCCheats/main/keys.txt",
+    KeyURL = "https://raw.githubusercontent.com/YOUR_USERNAME/CC-chits/main/keys.txt",
 }
 
 local function CheckKey()
