@@ -13,7 +13,7 @@
 local KeyConfig = {
     ValidKeys = {"CC-a7k9m2p4x6z1b3n5v8c0q"},
     KeyFile = "CCKey.txt",
-    KeyURL = "https://raw.githubusercontent.com/YOUR_USERNAME/CC-chits/main/keys.txt",
+    KeyURL = "https://raw.githubusercontent.com/Chickenbagguette/CC-chits/main/keys.txt",
 }
 
 local function CheckKey()
